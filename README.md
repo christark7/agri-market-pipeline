@@ -57,3 +57,5 @@ Create these repository secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZUR
 For the first remote-state migration, an Owner or User Access Administrator must grant the signed-in user `Storage Blob Data Contributor` on `sttfstateagri1a564`. Then run `terraform init -migrate-state`. The role is scoped to the state account only.
 
 The workflow needs subscription-level Contributor and the ability to create role assignments. Prefer a narrower resource-group scope after the initial bootstrap. Tenant-wide MFA, Conditional Access, and break-glass accounts must be configured by an Entra administrator in the tenant; this repository does not change those policies.
+
+CI/CD workflow enabled.
