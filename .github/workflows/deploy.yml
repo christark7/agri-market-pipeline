@@ -16,6 +16,7 @@ env:
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_USE_OIDC: true
   ARM_USE_CLI: false
+  ARM_ACCESS_KEY: ${{ secrets.TFSTATE_STORAGE_ACCESS_KEY }}
   FUNCTION_APP_NAME: func-agri-v1a564
   FUNCTION_RESOURCE_GROUP: rg-agri-functions-dev-central
 

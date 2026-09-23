@@ -16,9 +16,6 @@ terraform {
     storage_account_name = "sttfstateagri1a564"
     container_name       = "tfstate"
     key                  = "agri-pipeline/terraform.tfstate"
-    use_azuread_auth     = true
-    use_oidc             = true
-    use_cli              = false
   }
 }
 
