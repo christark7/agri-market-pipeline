@@ -1,0 +1,44 @@
+Latest Exchange Rate =
+VAR MaxDate = MAX('vw_powerbi_forex_analytics'[rate_date])
+RETURN
+    CALCULATE(
+        SELECTEDVALUE('vw_powerbi_forex_analytics'[daily_close]),
+        'vw_powerbi_forex_analytics'[rate_date] = MaxDate
+    )
+
+Latest Trend Signal =
+VAR MaxDate = MAX('vw_powerbi_forex_analytics'[rate_date])
+RETURN
+    COALESCE(
+        CALCULATE(
+            SELECTEDVALUE('vw_powerbi_forex_analytics'[trend_signal]),
+            'vw_powerbi_forex_analytics'[rate_date] = MaxDate
+        ),
+        "Select one currency pair"
+    )
+
+Latest 20D Volatility =
+VAR MaxDate = MAX('vw_powerbi_forex_analytics'[rate_date])
+VAR RawVolatility = CALCULATE(
+    SELECTEDVALUE('vw_powerbi_forex_analytics'[annualized_volatility_pct]),
+    'vw_powerbi_forex_analytics'[rate_date] = MaxDate
+)
+RETURN DIVIDE(RawVolatility, 100, 0)
+
+Latest Daily Return % =
+VAR MaxDate = MAX('vw_powerbi_forex_analytics'[rate_date])
+VAR RawReturn = CALCULATE(
+    SELECTEDVALUE('vw_powerbi_forex_analytics'[daily_return_pct]),
+    'vw_powerbi_forex_analytics'[rate_date] = MaxDate
+)
+RETURN DIVIDE(RawReturn, 100, 0)
+
+Trend Signal Color =
+VAR Signal = [Latest Trend Signal]
+RETURN
+    SWITCH(
+        TRUE(),
+        CONTAINSSTRING(Signal, "Bullish"), "#16805C",
+        CONTAINSSTRING(Signal, "Bearish"), "#C93756",
+        "#52706A"
+    )

@@ -1,0 +1,10 @@
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.*
+.venv/
+__pycache__/
+local.settings.json
+*.pyc
+function.zip
+.python_packages/
