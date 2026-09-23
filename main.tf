@@ -17,11 +17,13 @@ terraform {
     container_name       = "tfstate"
     key                  = "agri-pipeline/terraform.tfstate"
     use_azuread_auth     = true
+    use_oidc             = true
   }
 }
 
 provider "azurerm" {
   features {}
+  use_oidc = true
 }
 
 data "azurerm_client_config" "current" {}
