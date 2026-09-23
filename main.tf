@@ -21,8 +21,6 @@ terraform {
 
 provider "azurerm" {
   features {}
-  use_oidc = true
-  use_cli  = false
 }
 
 data "azurerm_client_config" "current" {}
@@ -127,7 +125,13 @@ resource "azurerm_key_vault_secret" "sql_admin_password" {
 resource "azurerm_role_assignment" "terraform_key_vault_access" {
   scope                = azurerm_key_vault.agri_vault.id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = "34d0519a-4972-4918-9f6b-d2c41411e8da"
+}
+
+resource "azurerm_role_assignment" "github_actions_key_vault_access" {
+  scope                = azurerm_key_vault.agri_vault.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = "88e1fa0e-b678-4379-ba28-228924657bd1"
 }
 
 resource "azurerm_service_plan" "function_plan" {
