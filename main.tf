@@ -172,13 +172,13 @@ resource "azurerm_linux_function_app" "ingest" {
     }
   }
 
- app_settings = {
-  "FUNCTIONS_WORKER_RUNTIME" = "python"
-  "AzureWebJobsStorage"      = azurerm_storage_account.agri_storage.primary_connection_string
-  "WEBSITE_RUN_FROM_PACKAGE" = "1"
-  "SQL_SERVER_FQDN"          = "sql-agri-v1a564.database.windows.net"
-  "SQL_DATABASE_NAME"        = "sqldb-agri-market"
-}
+  app_settings = {
+    "FUNCTIONS_WORKER_RUNTIME" = "python"
+    "AzureWebJobsStorage"      = azurerm_storage_account.agri_storage.primary_connection_string
+    "WEBSITE_RUN_FROM_PACKAGE" = "1"
+    "SQL_SERVER_FQDN"          = "sql-agri-v1a564.database.windows.net"
+    "SQL_DATABASE_NAME"        = "sqldb-agri-market"
+  }
   lifecycle {
     ignore_changes = [
       app_settings["WEBSITE_RUN_FROM_PACKAGE"],
