@@ -18,12 +18,14 @@ terraform {
     key                  = "agri-pipeline/terraform.tfstate"
     use_azuread_auth     = true
     use_oidc             = true
+    use_cli              = false
   }
 }
 
 provider "azurerm" {
   features {}
   use_oidc = true
+  use_cli  = false
 }
 
 data "azurerm_client_config" "current" {}
