@@ -203,6 +203,12 @@ resource "azurerm_role_assignment" "function_blob_access" {
   principal_id         = azurerm_linux_function_app.ingest.identity[0].principal_id
 }
 
+resource "azurerm_role_assignment" "function_blob_owner_access" {
+  scope                = azurerm_storage_account.agri_storage.id
+  role_definition_name = "Storage Blob Data Owner"
+  principal_id         = azurerm_linux_function_app.ingest.identity[0].principal_id
+}
+
 resource "azurerm_role_assignment" "function_queue_access" {
   scope                = azurerm_storage_account.agri_storage.id
   role_definition_name = "Storage Queue Data Contributor"
