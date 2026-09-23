@@ -172,23 +172,13 @@ resource "azurerm_linux_function_app" "ingest" {
     }
   }
 
-  app_settings = {
-    FUNCTIONS_WORKER_RUNTIME                = "python"
-    SCM_DO_BUILD_DURING_DEPLOYMENT          = "1"
-    ENABLE_ORYX_BUILD                       = "1"
-    MARKET_DATA_API_URL                     = "https://open.er-api.com/v6/latest/USD"
-    BLOB_CONTAINER_NAME                     = azurerm_storage_container.raw_data.name
-    DEADLETTER_CONTAINER_NAME               = azurerm_storage_container.deadletter.name
-    BLOB_STORAGE_ACCOUNT_URL                = "https://${azurerm_storage_account.agri_storage.name}.blob.core.windows.net"
-    AzureWebJobsStorage__accountName        = azurerm_storage_account.agri_storage.name
-    AzureWebJobsStorage__credential         = "managedidentity"
-    AzureWebJobsStorage__clientId           = "SystemAssigned"
-    BLOB_STORAGE_CONNECTION__blobServiceUri = "https://${azurerm_storage_account.agri_storage.name}.blob.core.windows.net"
-    BLOB_STORAGE_CONNECTION__credential     = "managedidentity"
-    SQL_SERVER_FQDN                         = azurerm_mssql_server.sql_server.fully_qualified_domain_name
-    SQL_DATABASE_NAME                       = azurerm_mssql_database.sql_db.name
-  }
-
+ app_settings = {
+  "FUNCTIONS_WORKER_RUNTIME" = "python"
+  "AzureWebJobsStorage"      = azurerm_storage_account.agri_storage.primary_connection_string
+  "WEBSITE_RUN_FROM_PACKAGE" = "1"
+  "SQL_SERVER_FQDN"          = "sql-agri-v1a564.database.windows.net"
+  "SQL_DATABASE_NAME"        = "sqldb-agri-market"
+}
   lifecycle {
     ignore_changes = [
       app_settings["WEBSITE_RUN_FROM_PACKAGE"],
