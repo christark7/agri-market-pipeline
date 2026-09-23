@@ -12,6 +12,9 @@ import requests
 
 app = func.FunctionApp()
 
+# Module-level credential instance (reuses token cache across invocations)
+AZURE_CREDENTIAL = DefaultAzureCredential()
+
 
 @app.timer_trigger(
     schedule="0 0 6 * * *",
@@ -69,13 +72,13 @@ def create_blob_service_client() -> BlobServiceClient:
     account_url = os.environ["BLOB_STORAGE_ACCOUNT_URL"]
     return BlobServiceClient(
         account_url=account_url,
-        credential=DefaultAzureCredential(),
+        credential=AZURE_CREDENTIAL,
     )
 
 
 @app.blob_trigger(
     arg_name="my_blob",
-    path="raw-market-data/year={year}/month={month}/{name}.json",
+    path="%BLOB_CONTAINER_NAME%/year={year}/month={month}/{name}.json",
     connection="BLOB_STORAGE_CONNECTION",
 )
 def stage_blob_to_sql(my_blob: func.InputStream) -> None:
@@ -95,20 +98,27 @@ def stage_blob_to_sql(my_blob: func.InputStream) -> None:
             f"Server=tcp:{server},1433;Database={database};"
             "Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
         )
-        token = DefaultAzureCredential().get_token(
+        
+        token = AZURE_CREDENTIAL.get_token(
             "https://database.windows.net/.default"
         ).token.encode("utf-16-le")
         token_struct = struct.pack(f"<I{len(token)}s", len(token), token)
+
+        json_str = json.dumps(document, separators=(",", ":"))
 
         with pyodbc.connect(
             connection_string,
             attrs_before={1256: token_struct},
         ) as connection:
-            connection.execute(
+            cursor = connection.cursor()
+            # Explicitly set parameter as NVARCHAR(MAX) to prevent truncation on large JSON
+            cursor.setinputsizes([(pyodbc.SQL_WVARCHAR, 0, 0)])
+            cursor.execute(
                 "EXEC dbo.sp_stage_market_prices @json_payload = ?",
-                json.dumps(document, separators=(",", ":")),
+                json_str,
             )
             connection.commit()
+
         logging.info("Staged %s into Azure SQL", my_blob.name)
     except Exception as error:
         logging.exception("Unable to stage %s", my_blob.name)
@@ -130,3 +140,7 @@ def route_to_deadletter(blob_name: str, payload: bytes, error: str, reason: str)
         metadata={"error_reason": reason, "error_details": error[:1000]},
         content_settings=ContentSettings(content_type="application/json"),
     )
+    
+git add function_app.py requirements.txt
+git commit -m "feat: implement timer ingestion and sql staging blob trigger"
+git push origin main
