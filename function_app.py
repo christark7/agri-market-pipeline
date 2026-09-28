@@ -12,6 +12,7 @@ import requests
 
 app = func.FunctionApp()
 
+
 # Module-level credential instance (reuses token cache across invocations)
 AZURE_CREDENTIAL = DefaultAzureCredential()
 
@@ -141,6 +142,3 @@ def route_to_deadletter(blob_name: str, payload: bytes, error: str, reason: str)
         content_settings=ContentSettings(content_type="application/json"),
     )
     
-git add function_app.py requirements.txt
-git commit -m "feat: implement timer ingestion and sql staging blob trigger"
-git push origin main
